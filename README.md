@@ -77,6 +77,7 @@
    npm run dev
 
 ### 📂 Project Structure
+```bash
 src/
 ├── api/                # Supabase API clients
 ├── assets/             # Images, fonts
@@ -95,7 +96,7 @@ src/
     └── config/        # Configuration files
 
 ### 🤖 UiPath Integration
-## Workflow Overview
+Workflow Overview
 1. Read Excel Data from Google Drive
 2. Validate Entries (Check for duplicates)
 3. Submit to Web Portal via API
