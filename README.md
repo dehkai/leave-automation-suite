@@ -102,7 +102,7 @@ src/
 4. Handle Errors with screenshots
 5. Send Status Email to HR
 
-##Required Activities
+## Required Activities
 - Read Range (Excel)
 - HTTP Request (API calls)
 - Try Catch (Error handling)
