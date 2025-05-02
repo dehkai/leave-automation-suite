@@ -110,8 +110,8 @@ src/
 
 For support, questions, or collaboration opportunities:
 
-**Developer**: [Yap Deh Kai]  
-**Email**: [ydk1421@gmail.com]  
+**Developer**: Yap Deh Kai  
+**Email**: ydk1421@gmail.com
 **GitHub**: [github.com/dehkai](https://github.com/dehkai)  
 **LinkedIn**: [linkedin.com/in/yapdehkai](https://linkedin.com/in/yapdehkai)  
 **University**: Universiti Teknologi Malaysia  
