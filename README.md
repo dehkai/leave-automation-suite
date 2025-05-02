@@ -9,14 +9,10 @@
 
 ## 📌 Table of Contents
 - [Features](#-features)
-- [Demo](#-demo)
 - [Tech Stack](#-tech-stack)
 - [Setup](#-setup)
 - [Project Structure](#-project-structure)
 - [UiPath Integration](#-uipath-integration)
-- [API Endpoints](#-api-endpoints)
-- [Deployment](#-deployment)
-- [Challenge Submission](#-challenge-submission)
 - [Contact](#-contact)
 
 ## ✨ Features
@@ -76,21 +72,51 @@
    ```bash
    npm run dev
 
+### 🤖 UiPath Integration
+
+**Workflow Overview**  
+1. Read Excel Data from Google Drive  
+2. Validate Entries (Check for duplicates)  
+3. Submit to Web Portal via API  
+4. Handle Errors with screenshots  
+5. Send Status Email to HR  
+
+**Required Activities**  
+- `Read Range` (Excel)  
+- `HTTP Request` (API calls)  
+- `Try Catch` (Error handling)  
+- `Send Outlook Mail` (Notifications)
+
 ### 📂 Project Structure
-   ```bash
-   src/
-   ├── api/                # Supabase API clients
-   ├── assets/             # Images, fonts
-   ├── components/         # Reusable components
-   │   ├── auth/          # Auth components
-   │   ├── leaves/        # Leave-specific components
-   │   └── ui/            # Generic UI components
-   ├── contexts/           # React contexts
-   ├── hooks/              # Custom hooks
-   ├── pages/              # Application views
-   ├── styles/             # Global styles
-   ├── utils/              # Utility functions
-   └── uipath/             # Automation workflows
-       ├── Main.xaml       # Main workflow
-       ├── ErrorHandler.xaml
-       └── config/        # Configuration files
+```bash
+src/
+├── api/                # Supabase API clients
+├── assets/             # Images, fonts
+├── components/         # Reusable components
+│   ├── auth/          # Auth components
+│   ├── leaves/        # Leave-specific components
+│   └── ui/            # Generic UI components
+├── contexts/           # React contexts
+├── hooks/              # Custom hooks
+├── pages/              # Application views
+├── styles/             # Global styles
+├── utils/              # Utility functions
+└── uipath/             # Automation workflows
+    ├── Main.xaml       # Main workflow
+    ├── ErrorHandler.xaml
+    └── config/        # Configuration files
+```
+## 📬 Contact
+
+For support, questions, or collaboration opportunities:
+
+**Developer**: [Yap Deh Kai]  
+**Email**: [ydk1421@gmail.com]  
+**GitHub**: [github.com/dehkai](https://github.com/dehkai)  
+**LinkedIn**: [linkedin.com/in/yapdehkai](https://linkedin.com/in/yapdehkai)  
+**University**: Universiti Teknologi Malaysia  
+
+[![Email](https://img.shields.io/badge/Email-Contact%20Me-red)](mailto:ydk1421@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/yapdehkai)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-lightgrey)](https://github.com/dehkai)
+
