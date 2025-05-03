@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ThemeProvider } from '@/themes/theme-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SiteHeader } from '@/components/dashboard/site-header';
 import * as z from "zod"
 
 const leaveSchema = z.object({
@@ -42,8 +43,8 @@ export default function LeaveSubmissionPage() {
         <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
+      <SiteHeader title="Leave Application Form" />
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Leave Application Form</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
