@@ -13,12 +13,13 @@ import { Label } from "@/components/ui/label";
 import { signup } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
+import { addUserDetails } from "@/api/userApi";
 
 export function SignupForm({
   className,
   ...props
 }) {
-  const [fullName, setFullName] = useState("");
+  const [full_name, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -30,7 +31,7 @@ export function SignupForm({
       const { user, error } = await signup(email, password);
       if (error) throw error;
       console.log("Signup successful", user);
-
+      await addUserDetails({ full_name, email });
       navigate("/login");
     } catch (error) {
       console.error("Error signing up", error);
@@ -50,8 +51,8 @@ export function SignupForm({
           <form onSubmit={handleSignup}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" type="text" placeholder="John Doe" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                <Label htmlFor="full_name">Full Name</Label>
+                <Input id="full_name" type="text" placeholder="John Doe" required value={full_name} onChange={(e) => setFullName(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>

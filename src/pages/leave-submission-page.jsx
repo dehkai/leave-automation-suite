@@ -69,7 +69,36 @@ export default function LeaveSubmissionPage() {
         console.log('Leave application submitted successfully', response);
       })
       .catch(error => {
+        const statusCode = error?.status || error?.response?.status || error?.originalError?.status || error?.response?.statusCode;
+        if (statusCode === 409) {
+          toast({
+            title: 'Conflict Detected',
+            description: 'A leave application already exists for this employee with overlapping dates',
+            status: 'error',
+            variant: 'destructive',
+            duration: 5000,
+          });
+          return;
+        }
+        else if (statusCode === 400) {
+          toast({
+            title: 'Validation Error',
+            description: 'Please check your input values and try again',
+            status: 'error',
+            variant: 'destructive',
+            duration: 5000,
+          });
+          return;
+        }
         console.error('Failed to submit leave application', error);
+        console.log('Error status:', error.status);
+        console.log('Error response status:', error.response?.status);
+        toast({
+          title: 'Error',
+          description: 'Failed to submit leave application',
+          status: 'error',
+          variant: 'destructive',
+        });
       });
   }
 
