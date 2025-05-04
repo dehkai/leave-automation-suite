@@ -13,21 +13,25 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { SiteHeader } from '@/components/dashboard/site-header';
 import * as z from "zod"
+import { submitLeaveApplication } from "@/api/leaveApi";
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 
 const leaveSchema = z.object({
-  employeeId: z.string().min(1, { message: "Employee ID is required" }),
-  employeeName: z.string().min(1, { message: "Employee Name is required" }),
-  leaveType: z.string().min(1, { message: "Leave Type is required" }),
-  startDate: z.string().min(1, { message: "Start Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
+  employee_id: z.string().min(1, { message: "Employee ID is required" }),
+  employee_name: z.string().min(1, { message: "Employee Name is required" }),
+  leave_type: z.string().min(1, { message: "Leave Type is required" }),
+  start_date: z.string().min(1, { message: "Start Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format, please use MM/DD/YY"
   }),
-  endDate: z.string().min(1, { message: "End Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
+  end_date: z.string().min(1, { message: "End Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format, please use MM/DD/YY"
   }),
   status: z.string().min(1, { message: "Status is required" })
 })
 
 export default function LeaveSubmissionPage() {
+  const { toast } = useToast();
   const [showStartDatePicker, setShowStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = React.useState(false);
   const [startDateInput, setStartDateInput] = React.useState('');
@@ -36,24 +40,37 @@ export default function LeaveSubmissionPage() {
   const form = useForm({
     resolver: zodResolver(leaveSchema),
     defaultValues: {
-      employeeId: "",
-      employeeName: "",
-      leaveType: "",
+      employee_id: "",
+      employee_name: "",
+      leave_type: "",
       status: "Pending"
     }
   })
 
   function onSubmit(values) {
-    const startDate = new Date(values.startDate);
-    const endDate = new Date(values.endDate);
-    if (endDate <= startDate) {
-      form.setError('endDate', {
+    const start_date = new Date(values.start_date);
+    const end_date = new Date(values.end_date);
+    if (end_date <= start_date) {
+      form.setError('end_date', {
         type: 'manual',
         message: 'End date must be after start date'
       });
       return;
     }
-    
+
+    submitLeaveApplication(values)
+      .then(response => {
+        toast({
+          title: 'Success',
+          description: 'Leave application submitted successfully',
+          status: 'success',
+          variant: 'success',
+        });
+        console.log('Leave application submitted successfully', response);
+      })
+      .catch(error => {
+        console.error('Failed to submit leave application', error);
+      });
   }
 
   const formatDateInput = (value) => {
@@ -65,6 +82,7 @@ export default function LeaveSubmissionPage() {
 
   return (
     <ThemeProvider>
+      <Toaster />
         <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
@@ -73,7 +91,7 @@ export default function LeaveSubmissionPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            <FormField control={form.control} name="employeeId" render={({ field }) => (
+            <FormField control={form.control} name="employee_id" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Employee ID</FormLabel>
                 <FormControl>
@@ -82,7 +100,7 @@ export default function LeaveSubmissionPage() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="employeeName" render={({ field }) => (
+            <FormField control={form.control} name="employee_name" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Employee Name</FormLabel>
                 <FormControl>
@@ -91,7 +109,7 @@ export default function LeaveSubmissionPage() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="leaveType" render={({ field }) => (
+            <FormField control={form.control} name="leave_type" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Leave Type</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -109,7 +127,7 @@ export default function LeaveSubmissionPage() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="startDate" render={({ field }) => (
+            <FormField control={form.control} name="start_date" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Start Date</FormLabel>
                 <FormControl>
@@ -150,7 +168,7 @@ export default function LeaveSubmissionPage() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="endDate" render={({ field }) => (
+            <FormField control={form.control} name="end_date" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>End Date</FormLabel>
                 <FormControl>
