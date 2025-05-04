@@ -18,14 +18,20 @@ const leaveSchema = z.object({
   employeeId: z.string().min(1, { message: "Employee ID is required" }),
   employeeName: z.string().min(1, { message: "Employee Name is required" }),
   leaveType: z.string().min(1, { message: "Leave Type is required" }),
-  startDate: z.date({ required_error: "Start Date is required" }),
-  endDate: z.date({ required_error: "End Date is required" }),
+  startDate: z.string().min(1, { message: "Start Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date format, please use MM/DD/YY"
+  }),
+  endDate: z.string().min(1, { message: "End Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date format, please use MM/DD/YY"
+  }),
   status: z.string().min(1, { message: "Status is required" })
 })
 
 export default function LeaveSubmissionPage() {
   const [showStartDatePicker, setShowStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = React.useState(false);
+  const [startDateInput, setStartDateInput] = React.useState('');
+  const [endDateInput, setEndDateInput] = React.useState('');
 
   const form = useForm({
     resolver: zodResolver(leaveSchema),
@@ -38,8 +44,24 @@ export default function LeaveSubmissionPage() {
   })
 
   function onSubmit(values) {
-    console.log(values)
+    const startDate = new Date(values.startDate);
+    const endDate = new Date(values.endDate);
+    if (endDate <= startDate) {
+      form.setError('endDate', {
+        type: 'manual',
+        message: 'End date must be after start date'
+      });
+      return;
+    }
+    
   }
+
+  const formatDateInput = (value) => {
+    const cleaned = value.replace(/[^\d]/g, '');
+    const match = cleaned.match(/^(\d{0,2})(\d{0,2})(\d{0,4})$/);
+    if (!match) return '';
+    return [match[1], match[2], match[3]].filter(Boolean).join('/');
+  };
 
   return (
     <ThemeProvider>
@@ -95,10 +117,11 @@ export default function LeaveSubmissionPage() {
                     <Input
                       type="text"
                       placeholder="MM/DD/YY"
-                      value={field.value ? format(field.value, 'MM/dd/yy') : ''}
+                      value={startDateInput}
                       onChange={(e) => {
-                        const date = new Date(e.target.value);
-                        if (!isNaN(date)) field.onChange(date);
+                        const formatted = formatDateInput(e.target.value);
+                        setStartDateInput(formatted);
+                        field.onChange(formatted);
                       }}
                       className="pr-10"
                     />
@@ -114,7 +137,9 @@ export default function LeaveSubmissionPage() {
                       mode="single"
                       selected={field.value}
                       onSelect={(date) => {
-                        field.onChange(date);
+                        const formattedDate = format(date, 'MM/dd/yy');
+                        field.onChange(formattedDate);
+                        setStartDateInput(formattedDate);
                         setShowStartDatePicker(false);
                       }}
                       disabled={(date) => date < new Date()}
@@ -133,10 +158,11 @@ export default function LeaveSubmissionPage() {
                     <Input
                       type="text"
                       placeholder="MM/DD/YY"
-                      value={field.value ? format(field.value, 'MM/dd/yy') : ''}
+                      value={endDateInput}
                       onChange={(e) => {
-                        const date = new Date(e.target.value);
-                        if (!isNaN(date)) field.onChange(date);
+                        const formatted = formatDateInput(e.target.value);
+                        setEndDateInput(formatted);
+                        field.onChange(formatted);
                       }}
                       className="pr-10"
                     />
@@ -152,7 +178,9 @@ export default function LeaveSubmissionPage() {
                       mode="single"
                       selected={field.value}
                       onSelect={(date) => {
-                        field.onChange(date);
+                        const formattedDate = format(date, 'MM/dd/yy');
+                        field.onChange(formattedDate);
+                        setEndDateInput(formattedDate);
                         setShowEndDatePicker(false);
                       }}
                       disabled={(date) => date < new Date()}
