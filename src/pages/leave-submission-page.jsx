@@ -21,14 +21,20 @@ const leaveSchema = z.object({
   employee_id: z.string().min(1, { message: "Employee ID is required" }),
   employee_name: z.string().min(1, { message: "Employee Name is required" }),
   leave_type: z.string().min(1, { message: "Leave Type is required" }),
-  start_date: z.string().min(1, { message: "Start Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format, please use MM/DD/YY"
+  start_date: z.string().min(1, { message: "Start Date is required" }).refine((val) => {
+    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    return datePattern.test(val) && !isNaN(Date.parse(val));
+  }, {
+    message: "Invalid date format, please use MM/DD/YYYY, M/D/YYYY, MM/D/YYYY, or M/DD/YYYY"
   }),
-  end_date: z.string().min(1, { message: "End Date is required" }).refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format, please use MM/DD/YY"
+  end_date: z.string().min(1, { message: "End Date is required" }).refine((val) => {
+    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    return datePattern.test(val) && !isNaN(Date.parse(val));
+  }, {
+    message: "Invalid date format, please use MM/DD/YYYY, M/D/YYYY, MM/D/YYYY, or M/DD/YYYY"
   }),
   status: z.string().min(1, { message: "Status is required" })
-})
+});
 
 export default function LeaveSubmissionPage() {
   const { toast } = useToast();
@@ -103,10 +109,12 @@ export default function LeaveSubmissionPage() {
   }
 
   const formatDateInput = (value) => {
-    const cleaned = value.replace(/[^\d]/g, '');
-    const match = cleaned.match(/^(\d{0,2})(\d{0,2})(\d{0,4})$/);
-    if (!match) return '';
-    return [match[1], match[2], match[3]].filter(Boolean).join('/');
+    const cleaned = value.replace(/[^0-9/]/g, '');
+    const match = cleaned.match(/^((\d{1,2})\/(\d{1,2})\/(\d{4}))$|^((\d{1,2})\/(\d{1,2})\/(\d{4}))$|^((\d{1,2})\/(\d{1,2})\/(\d{4}))$|^((\d{1,2})\/(\d{1,2})\/(\d{4}))$/);
+    if (!match) return value;
+    const [_, month, day, year] = match;
+    const formattedDate = `${month}/${day}/${year}`;
+    return isNaN(Date.parse(formattedDate)) ? value : formattedDate;
   };
 
   return (
@@ -163,7 +171,7 @@ export default function LeaveSubmissionPage() {
                   <div className="relative">
                     <Input
                       type="text"
-                      placeholder="MM/DD/YY"
+                      placeholder="MM/DD/YYYY"
                       value={startDateInput}
                       onChange={(e) => {
                         const formatted = formatDateInput(e.target.value);
@@ -184,7 +192,7 @@ export default function LeaveSubmissionPage() {
                       mode="single"
                       selected={field.value}
                       onSelect={(date) => {
-                        const formattedDate = format(date, 'MM/dd/yy');
+                        const formattedDate = format(date, 'MM/dd/yyyy');
                         field.onChange(formattedDate);
                         setStartDateInput(formattedDate);
                         setShowStartDatePicker(false);
@@ -204,7 +212,7 @@ export default function LeaveSubmissionPage() {
                   <div className="relative">
                     <Input
                       type="text"
-                      placeholder="MM/DD/YY"
+                      placeholder="MM/DD/YYYY"
                       value={endDateInput}
                       onChange={(e) => {
                         const formatted = formatDateInput(e.target.value);
@@ -225,7 +233,7 @@ export default function LeaveSubmissionPage() {
                       mode="single"
                       selected={field.value}
                       onSelect={(date) => {
-                        const formattedDate = format(date, 'MM/dd/yy');
+                        const formattedDate = format(date, 'MM/dd/yyyy');
                         field.onChange(formattedDate);
                         setEndDateInput(formattedDate);
                         setShowEndDatePicker(false);
