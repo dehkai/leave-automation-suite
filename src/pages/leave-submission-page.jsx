@@ -73,6 +73,14 @@ export default function LeaveSubmissionPage() {
           variant: 'success',
         });
         console.log('Leave application submitted successfully', response);
+        form.reset({
+          employee_id: "",
+          employee_name: "",
+          leave_type: "",
+          status: "Pending"
+        });
+        setStartDateInput('');
+        setEndDateInput('');
       })
       .catch(error => {
         const statusCode = error?.status || error?.response?.status || error?.originalError?.status || error?.response?.statusCode;
@@ -105,6 +113,14 @@ export default function LeaveSubmissionPage() {
           status: 'error',
           variant: 'destructive',
         });
+        form.reset({
+          employee_id: "",
+          employee_name: "",
+          leave_type: "",
+          status: "Pending"
+        });
+        setStartDateInput('');
+        setEndDateInput('');
       });
   }
 
