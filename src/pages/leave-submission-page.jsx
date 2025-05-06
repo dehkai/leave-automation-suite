@@ -49,6 +49,8 @@ export default function LeaveSubmissionPage() {
       employee_id: "",
       employee_name: "",
       leave_type: "",
+      start_date: "",
+      end_date: "",
       status: "Pending"
     }
   })
@@ -56,10 +58,10 @@ export default function LeaveSubmissionPage() {
   function onSubmit(values) {
     const start_date = new Date(values.start_date);
     const end_date = new Date(values.end_date);
-    if (end_date <= start_date) {
+    if (end_date < start_date) {
       form.setError('end_date', {
         type: 'manual',
-        message: 'End date must be after start date'
+        message: 'End date cannot earlier than start date'
       });
       return;
     }
@@ -173,7 +175,7 @@ export default function LeaveSubmissionPage() {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="Annual Leave">Annual Leave</SelectItem>
-                    <SelectItem value="Sick Leave">Sick Leave</SelectItem>
+                    <SelectItem value="Medical Leave">Medical Leave</SelectItem>
                     <SelectItem value="Emergency Leave">Emergency Leave</SelectItem>
                   </SelectContent>
                 </Select>
