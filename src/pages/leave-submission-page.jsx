@@ -165,7 +165,7 @@ export default function LeaveSubmissionPage() {
             <FormField control={form.control} name="leave_type" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Leave Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select leave type" />
@@ -265,7 +265,7 @@ export default function LeaveSubmissionPage() {
             <FormField control={form.control} name="status" render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
