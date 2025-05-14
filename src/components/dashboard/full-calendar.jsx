@@ -33,8 +33,11 @@ import {
   useContext,
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { getLeaveApplications } from '@/api/leaveApi';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 const monthEventVariants = cva('size-2 rounded-full', {
   variants: {
@@ -162,12 +165,44 @@ const EventGroup = ({
 };
 
 const CalendarMonthView = () => {
-  const { date, view, events, locale } = useCalendar();
+  const { date, view, locale } = useCalendar();
+
+  const [leaveEvents, setLeaveEvents] = useState([]);
+  const [openPopover, setOpenPopover] = useState(null); 
+
+  
+  useEffect(() => {
+    getLeaveApplications().then(data => {
+      const approvedData = data.filter(app => app.status === 'Approved');
+      const events = [];
+      approvedData.forEach(app => {
+        let current = new Date(app.start_date);
+        const end = new Date(app.end_date);
+        while (current <= end) {
+          events.push({
+            date: format(current, 'yyyy-MM-dd'),
+            leave_type: app.leave_type,
+            employee_name: app.employee_name,
+          });
+          current = new Date(current);
+          current.setDate(current.getDate() + 1);
+        }
+      });
+      setLeaveEvents(events);
+    });
+  }, []);
 
   const monthDates = useMemo(() => getDaysInMonth(date), [date]);
   const weekDays = useMemo(() => generateWeekdays(locale), [locale]);
 
   if (view !== 'month') return null;
+
+  
+  const leaveTypes = [
+    { type: 'Annual Leave', color: 'blue' },
+    { type: 'Medical Leave', color: 'green' },
+    { type: 'Emergency Leave', color: 'pink' },
+  ];
 
   return (
     <div className="h-full flex flex-col">
@@ -186,9 +221,14 @@ const CalendarMonthView = () => {
       </div>
       <div className="grid overflow-hidden -mt-px flex-1 auto-rows-fr p-px grid-cols-7 gap-px">
         {monthDates.map((_date) => {
-          const currentEvents = events.filter((event) =>
-            isSameDay(event.start, _date)
-          );
+          const dateStr = format(_date, 'yyyy-MM-dd');
+          const eventsForDay = leaveEvents.filter(e => e.date === dateStr);
+          const eventsByType = leaveTypes.map(({ type, color }) => {
+            const people = eventsForDay.filter(e => e.leave_type === type);
+            return people.length
+              ? { type, color, people }
+              : null;
+          }).filter(Boolean);
 
           return (
             <div
@@ -207,23 +247,39 @@ const CalendarMonthView = () => {
                 {format(_date, 'd')}
               </span>
 
-              {currentEvents.map((event) => {
+              
+              {eventsByType.map(({ type, color, people }) => {
+                const popoverId = `${format(_date, 'yyyy-MM-dd')}-${type}`;
                 return (
-                  <div
-                    key={event.id}
-                    className="px-1 rounded text-sm flex items-center gap-1"
-                  >
-                    <div
-                      className={cn(
-                        'shrink-0',
-                        monthEventVariants({ variant: event.color })
-                      )}
-                    ></div>
-                    <span className="flex-1 truncate">{event.title}</span>
-                    <time className="tabular-nums text-muted-foreground/50 text-xs">
-                      {format(event.start, 'HH:mm')}
-                    </time>
-                  </div>
+                  <Popover key={type} open={openPopover === popoverId} onOpenChange={open => setOpenPopover(open ? popoverId : null)}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          'flex flex-row items-center gap-1 px-1 rounded text-xs cursor-pointer mb-1 whitespace-nowrap',
+                          monthEventVariants({ variant: color })
+                        )}
+                        type="button"
+                      >
+                        <span className={cn('inline-block size-2 rounded-full mr-1', monthEventVariants({ variant: color }))} />
+                        <span>{type}</span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="center">
+                      <div className="min-w-[220px]">
+                        <h2 className="text-base font-bold mb-2">
+                          {type} on {format(_date, 'PPP')}
+                        </h2>
+                        <p className="mb-2">
+                          {people.length} people on leave:
+                        </p>
+                        <ul className="list-disc ml-5 mb-2">
+                          {people.map((p, i) => (
+                            <li key={i}>{p.employee_name}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
