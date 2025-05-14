@@ -22,14 +22,52 @@ const leaveSchema = z.object({
   employee_name: z.string().min(1, { message: "Employee Name is required" }),
   leave_type: z.string().min(1, { message: "Leave Type is required" }),
   start_date: z.string().min(1, { message: "Start Date is required" }).refine((val) => {
-    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    return datePattern.test(val) && !isNaN(Date.parse(val));
+    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    if (!datePattern.test(val)) {
+      return false; 
+    }
+    const parts = val.split('/');
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    // Basic range checks, note that JS months are 0-indexed in Date constructor
+    if (year < 1000 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) {
+      return false;
+    }
+
+    const dateObj = new Date(year, month - 1, day);
+    // Check if the Date object's components match the input components
+    return (
+      dateObj.getFullYear() === year &&
+      dateObj.getMonth() === month - 1 &&
+      dateObj.getDate() === day
+    );
   }, {
     message: "Invalid date format, please use MM/DD/YYYY, M/D/YYYY, MM/D/YYYY, or M/DD/YYYY"
   }),
   end_date: z.string().min(1, { message: "End Date is required" }).refine((val) => {
-    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$|^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    return datePattern.test(val) && !isNaN(Date.parse(val));
+    const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    if (!datePattern.test(val)) {
+      return false; 
+    }
+    const parts = val.split('/');
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    // Basic range checks, note that JS months are 0-indexed in Date constructor
+    if (year < 1000 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) {
+      return false;
+    }
+    
+    const dateObj = new Date(year, month - 1, day);
+    // Check if the Date object's components match the input components
+    return (
+      dateObj.getFullYear() === year &&
+      dateObj.getMonth() === month - 1 &&
+      dateObj.getDate() === day
+    );
   }, {
     message: "Invalid date format, please use MM/DD/YYYY, M/D/YYYY, MM/D/YYYY, or M/DD/YYYY"
   }),
