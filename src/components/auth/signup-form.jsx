@@ -31,7 +31,6 @@ export function SignupForm({
     setIsLoading(true);
     
     try {
-      // First, create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -48,10 +47,8 @@ export function SignupForm({
         throw new Error("No user data returned from signup");
       }
 
-      // Wait a moment for the auth state to be fully established
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Then, add the user details to the users table
       const { error: userError } = await supabase
         .from('users')
         .insert([{
@@ -64,7 +61,6 @@ export function SignupForm({
 
       if (userError) {
         console.error('Error adding user details:', userError);
-        // If we fail to add user details, we should clean up the auth user
         await supabase.auth.signOut();
         throw userError;
       }

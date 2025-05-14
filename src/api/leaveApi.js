@@ -19,3 +19,19 @@ export async function submitLeaveApplication(payload) {
     throw error;
   }
 }
+
+export async function getLeaveApplications() {
+  try {
+    const { data, error } = await supabase
+      .from('leave_applications')
+      .select('employee_id, employee_name, leave_type, start_date, end_date, status');
+    if (error) {
+      console.error('Error fetching leave applications', error);
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error('Error in getLeaveApplications', error);
+    throw error;
+  }
+}

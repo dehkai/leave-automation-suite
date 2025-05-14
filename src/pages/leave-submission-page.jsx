@@ -114,6 +114,7 @@ export default function LeaveSubmissionPage() {
           description: 'Failed to submit leave application',
           status: 'error',
           variant: 'destructive',
+          duration: 50000,
         });
         form.reset({
           employee_id: "",
