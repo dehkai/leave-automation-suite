@@ -1,12 +1,14 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
+import { supabase } from '@/lib/supabaseClient';
 
 export async function addUserDetails(payload) {
   try {
     const { data, error } = await supabase
       .from('users')
-      .insert([payload]);
+      .insert([{
+        uuid: payload.uuid,
+        full_name: payload.full_name,
+        email: payload.email
+      }]);
 
     if (error) {
       console.error('Error adding user details:', error);

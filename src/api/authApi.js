@@ -1,76 +1,58 @@
+import { supabase } from '@/lib/supabaseClient'
+
 export async function login(email, password) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-    const data = await response.json();
-    if (response.ok) {
-      console.log("Login successful", data);
-      return data;
-    } else {
-      console.error("Login failed", data);
-      throw new Error(data.error_description || "Login failed");
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error("Login failed", error)
+      throw new Error(error.message)
     }
+
+    console.log("Login successful", data)
+    return data
   } catch (error) {
-    console.error("Error logging in", error);
-    throw error;
+    console.error("Error logging in", error)
+    throw error
   }
 }
 
 export async function signup(email, password) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({
-        email: email.toString(),
-        password: password.toString(),
-      }),
-    });
-    const data = await response.json();
-    if (response.ok) {
-      console.log("Signup successful", data);
-      return { user: data.user, error: data.error };
-    } else {
-      console.error("Signup failed", data);
-      throw new Error(data.error_description || "Signup failed");
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error("Signup failed", error)
+      throw new Error(error.message)
     }
+
+    console.log("Signup successful", data)
+    return data
   } catch (error) {
-    console.error("Error signing up", error);
-    throw error;
+    console.error("Error signing up", error)
+    throw error
   }
 }
 
 export async function logout() {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-    });
-    const data = await response.json();
-    if (response.ok) {
-      console.log("Logout successful", data);
-      return data;
-    } else {
-      console.error("Logout failed", data);
-      throw new Error(data.error_description || "Logout failed");
+    const { error } = await supabase.auth.signOut()
+    
+    if (error) {
+      console.error("Logout failed", error)
+      throw new Error(error.message)
     }
+
+    console.log("Logout successful")
+    return true
   } catch (error) {
-    console.error("Error logging out", error);
-    throw error;
+    console.error("Error logging out", error)
+    throw error
   }
 }

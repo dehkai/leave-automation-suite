@@ -10,10 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signup } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
-import { addUserDetails } from "@/api/userApi";
 
 export function SignupForm({
   className,
@@ -22,19 +20,62 @@ export function SignupForm({
   const [full_name, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    
     try {
-      const { user, error } = await signup(email, password);
-      if (error) throw error;
-      console.log("Signup successful", user);
-      await addUserDetails({ full_name, email });
+      // First, create the auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: full_name
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      if (!authData.user) {
+        throw new Error("No user data returned from signup");
+      }
+
+      // Wait a moment for the auth state to be fully established
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Then, add the user details to the users table
+      const { error: userError } = await supabase
+        .from('users')
+        .insert([{
+          uuid: authData.user.id,
+          full_name: full_name,
+          email: email
+        }])
+        .select()
+        .single();
+
+      if (userError) {
+        console.error('Error adding user details:', userError);
+        // If we fail to add user details, we should clean up the auth user
+        await supabase.auth.signOut();
+        throw userError;
+      }
+
+      console.log("Signup successful", authData);
       navigate("/login");
     } catch (error) {
       console.error("Error signing up", error);
+      setError(error.message || "Failed to sign up. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,21 +91,55 @@ export function SignupForm({
         <CardContent>
           <form onSubmit={handleSignup}>
             <div className="flex flex-col gap-6">
+              {error && (
+                <div className="text-sm text-red-500">
+                  {error}
+                </div>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="full_name">Full Name</Label>
-                <Input id="full_name" type="text" placeholder="John Doe" required value={full_name} onChange={(e) => setFullName(e.target.value)} />
+                <Input 
+                  id="full_name" 
+                  type="text" 
+                  placeholder="John Doe" 
+                  required 
+                  value={full_name} 
+                  onChange={(e) => setFullName(e.target.value)}
+                  disabled={isLoading}
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="m@example.com" 
+                  required 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
               </div>
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing up..." : "Sign Up"}
               </Button>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{" "}
+              <a href="/login" className="underline underline-offset-4">
+                Login
+              </a>
             </div>
           </form>
         </CardContent>
