@@ -1,9 +1,9 @@
 # 🌟 Digital Leave Automation System
 
 **A modern HR solution for DHL's Digital Automation Challenge 2.0**  
-[![React](https://img.shields.io/badge/React-18.2-%2361DAFB)](https://reactjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-2.38-%233ECF8E)](https://supabase.com/)
-[![UiPath](https://img.shields.io/badge/UiPath-2023-%23FF5C0D)](https://www.uipath.com/)
+[![React](https://img.shields.io/badge/React-19.0.1-%2361DAFB)](https://reactjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-%233ECF8E)](https://supabase.com/)
+[![UiPath](https://img.shields.io/badge/UiPath-2025-%23FF5C0D)](https://www.uipath.com/)
 
 
 
@@ -35,14 +35,14 @@
 ## 🛠 Tech Stack
 
 **Frontend**  
-- React.js 18 (Vite)
-- Material-UI (MUI)
+- React.js 19 (Vite)
+- Shadcn UI
 
 **Backend**  
 - Supabase (PostgreSQL Database + Auth)
 
 **Automation**  
-- UiPath Studio 2023
+- UiPath Studio 2025
 - REFramework 
 
 ## 🚀 Setup
@@ -83,7 +83,8 @@
 
 **Required Activities**  
 - `Read Range` (Excel)  
-- `HTTP Request` (API calls)  
+- `Type Into` (Enter data)
+- `Click` (Submit data)  
 - `Try Catch` (Error handling)  
 - `Send Outlook Mail` (Notifications)
 
@@ -100,11 +101,8 @@ src/
 ├── hooks/              # Custom hooks
 ├── pages/              # Application views
 ├── styles/             # Global styles
-├── utils/              # Utility functions
-└── uipath/             # Automation workflows
-    ├── Main.xaml       # Main workflow
-    ├── ErrorHandler.xaml
-    └── config/        # Configuration files
+└──utils/              # Utility functions          
+    
 ```
 ## 📬 Contact
 
