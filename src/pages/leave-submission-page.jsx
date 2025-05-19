@@ -123,14 +123,14 @@ export default function LeaveSubmissionPage() {
         setEndDateInput('');
       })
       .catch(error => {
-        const statusCode = error?.status || error?.response?.status || error?.originalError?.status || error?.response?.statusCode;
+        const statusCode = error?.context?.status || error?.status || error?.response?.status || error?.originalError?.status || error?.response?.statusCode;
         if (statusCode === 409) {
           toast({
             title: 'Conflict Detected',
             description: 'A leave application already exists for this employee with overlapping dates',
             status: 'error',
             variant: 'destructive',
-            duration: 5000,
+            duration: 50000,
           });
           return;
         }
@@ -140,7 +140,7 @@ export default function LeaveSubmissionPage() {
             description: 'Please check your input values and try again',
             status: 'error',
             variant: 'destructive',
-            duration: 5000,
+            duration: 50000,
           });
           return;
         }

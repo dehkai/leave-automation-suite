@@ -66,7 +66,6 @@ export function NavUser() {
 
         if (userError) {
           console.error('Error fetching user data:', userError)
-          // If user data not found, use session data
           setUser({
             name: session.user.user_metadata?.full_name || 'User',
             email: session.user.email,
@@ -88,7 +87,6 @@ export function NavUser() {
       }
     }
 
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         navigate('/login')
