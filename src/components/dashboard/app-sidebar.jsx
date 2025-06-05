@@ -15,6 +15,7 @@ import {
   SearchIcon,
   SettingsIcon,
   UsersIcon,
+  UploadIcon,
 } from "lucide-react"
 
 // import { NavDocuments } from "@/components/dashboard/nav-documents"
@@ -52,6 +53,11 @@ const data = {
       title: "Leave Applications",
       url: "/leave-applications",
       icon: ClipboardListIcon,
+    },
+    {
+      title: "Bulk Upload",
+      url: "/bulk-upload",
+      icon: UploadIcon,
     },
     // {
     //   title: "Analytics",
