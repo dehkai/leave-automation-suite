@@ -18,7 +18,9 @@ const columns = [
 export function LeaveApplicationsTable() {
   const [data, setData] = React.useState([]);
   const [sorting, setSorting] = React.useState([]);
-  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [employeeIdFilter, setEmployeeIdFilter] = React.useState("");
+  const [startDateFilter, setStartDateFilter] = React.useState("");
+  const [endDateFilter, setEndDateFilter] = React.useState("");
 
   React.useEffect(() => {
     async function fetchData() {
@@ -33,30 +35,63 @@ export function LeaveApplicationsTable() {
     fetchData();
   }, []);
 
+  const filteredData = React.useMemo(() => {
+    return data.filter((row) => {
+      const matchesEmployeeId = !employeeIdFilter || 
+        String(row.employee_id).toLowerCase().includes(employeeIdFilter.toLowerCase());
+      
+      const matchesStartDate = !startDateFilter || 
+        String(row.start_date).toLowerCase().includes(startDateFilter.toLowerCase());
+      
+      const matchesEndDate = !endDateFilter || 
+        String(row.end_date).toLowerCase().includes(endDateFilter.toLowerCase());
+      
+      return matchesEmployeeId && matchesStartDate && matchesEndDate;
+    });
+  }, [data, employeeIdFilter, startDateFilter, endDateFilter]);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     state: {
       sorting,
-      globalFilter,
     },
     onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
     <div className="p-4">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Search all columns..."
-          value={globalFilter ?? ''}
-          onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center gap-4 py-4">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Employee ID</label>
+          <Input
+            placeholder="Search by ID..."
+            value={employeeIdFilter}
+            onChange={(event) => setEmployeeIdFilter(event.target.value)}
+            className="w-[200px]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Start Date</label>
+          <Input
+            placeholder="Search by start date..."
+            value={startDateFilter}
+            onChange={(event) => setStartDateFilter(event.target.value)}
+            className="w-[200px]"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">End Date</label>
+          <Input
+            placeholder="Search by end date..."
+            value={endDateFilter}
+            onChange={(event) => setEndDateFilter(event.target.value)}
+            className="w-[200px]"
+          />
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
